@@ -1,0 +1,35 @@
+name: mon_projet
+description: A new Flutter project.
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.17.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^0.13.3  # Ajoutez une version spécifique pour éviter les conflits
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^1.0.0  # Correction du nom du package
+
+flutter:
+  assets:
+    - assets/image1.jpg
+    - assets/image2.jpg
+    - assets/se-deconnecter.png
+    - assets/traverser.png
+    - assets/jaccepte.png
+    - assets/un.png
+    - assets/equitation.png
+    - assets/reinitialiser.png
+    - assets/pingouin_back.png
+    - assets/verrouiller.png
+    - assets/image_utilisateur.png
+    - assets/logo_equestre.png
+    # Ajoutez ici d'autres images si nécessaire
