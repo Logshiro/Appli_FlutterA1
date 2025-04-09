@@ -1,53 +1,68 @@
 import 'package:flutter/material.dart';
-import 'login_page.dart';  // Ensure this path is correct
-import 'home_page.dart';
-import 'inscrit_cours_page.dart';  // Ensure this path is correct
+import 'login_page.dart'; // Importe la page de connexion
+import 'home_page.dart'; // Importe la page d'accueil
+import 'course_details_page.dart'; // Importe la page des détails du cours
+import 'my_courses_page.dart'; // Importe la page "Mes Cours"
+import 'profile_page.dart'; // Importe la page "Profil"
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Haras Des Neuilles',
+      debugShowCheckedModeBanner: true,
+      title: 'Mon Application Équestre',
       theme: ThemeData(
-        primarySwatch: Colors.brown,
-        useMaterial3: true,
+        primarySwatch: Colors.blueGrey,
+        scaffoldBackgroundColor: Colors.blueGrey[50],
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(color: Colors.black87),
+          bodyMedium: TextStyle(color: Colors.black54),
+        ),
       ),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => LoginPage(),
-        '/home': (context) {
-          final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-          if (args != null) {
-            return HomePage(
-              cavalierId: args['cavalierId'] ?? 'Inconnu',
-              coursId: args['coursId'] ?? 'Inconnu',
-            );
-          } else {
-            return Scaffold(
-              appBar: AppBar(title: Text('Erreur')),
-              body: Center(child: Text('Erreur lors du chargement des cours.')),
-            );
-          }
-        },
-        '/inscrit': (context) {
-          final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-          if (args != null && args['cours'] is List<dynamic> && args['cavalierId'] != null && args['coursId'] != null) {
-            return InscritCoursPage(
-              cours: args['cours'],
+      initialRoute: '/', // Route initiale : page de connexion
+      onGenerateRoute: (settings) {
+        if (settings.name == '/') {
+          return MaterialPageRoute(
+            builder: (context) => const LoginPage(),
+          );
+        } else if (settings.name == '/home') {
+          final args = settings.arguments as Map<String, dynamic>?;
+          return MaterialPageRoute(
+            builder: (context) => HomePage(
+              cavalierId: args?['cavalierId'] ?? 'default_cavalier_id',
+              coursId: args?['coursId'] ?? '',
+            ),
+          );
+        } else if (settings.name == '/course_details') {
+          final args = settings.arguments as Map<String, dynamic>;
+          return MaterialPageRoute(
+            builder: (context) => CourseDetailsPage(
+              course: args['course'],
               cavalierId: args['cavalierId'],
-              coursId: args['coursId'],
-            );
-          } else {
-            return Scaffold(
-              appBar: AppBar(title: Text('Erreur')),
-              body: Center(child: Text('Erreur lors du chargement des cours.')),
-            );
-          }
-        },
+            ),
+          );
+        } else if (settings.name == '/my_courses') {
+          final args = settings.arguments as Map<String, dynamic>;
+          return MaterialPageRoute(
+            builder: (context) => MyCoursesPage(
+              cavalierId: args['cavalierId'],
+            ),
+          );
+        } else if (settings.name == '/profile') {
+          final args = settings.arguments as Map<String, dynamic>;
+          return MaterialPageRoute(
+            builder: (context) => ProfilePage(
+              cavalierId: args['cavalierId'],
+            ),
+          );
+        }
+        return null;
       },
     );
   }

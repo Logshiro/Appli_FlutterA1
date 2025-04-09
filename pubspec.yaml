@@ -32,4 +32,9 @@ flutter:
     - assets/verrouiller.png
     - assets/image_utilisateur.png
     - assets/logo_equestre.png
+    - assets/accueil.png
+    - assets/libelle-de-referencement.png
+    - assets/plus-dinformation.png
+    - assets/recharger-les-fleches.png
+    - assets/filtre.png
     # Ajoutez ici d'autres images si nécessaire

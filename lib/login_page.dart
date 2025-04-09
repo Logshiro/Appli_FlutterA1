@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'focus_node.dart'; // Assurez-vous que ce fichier existe et est correctement importé
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -20,13 +22,15 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
     _focusManager.dispose();
     super.dispose();
   }
 
   Future<void> _login() async {
-    final email = _emailController.text;
-    final password = _passwordController.text;
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
 
     if (email.isEmpty || password.isEmpty) {
       setState(() {
@@ -55,14 +59,18 @@ class _LoginPageState extends State<LoginPage> {
             _coursId = loginData['cours_id']?.toString();
           });
 
+          // Redirection vers HomePage après une connexion réussie
           Navigator.pushReplacementNamed(
             context,
             '/home',
-            arguments: {'cours': [], 'cavalierId': _cavalierId, 'coursId': _coursId},
+            arguments: {
+              'cavalierId': _cavalierId,
+              'coursId': _coursId,
+            },
           );
         } else {
           setState(() {
-            _errorMessage = loginData['message'];
+            _errorMessage = loginData['message'] ?? 'Erreur de connexion';
           });
         }
       } else {
@@ -81,17 +89,20 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          Image.asset(
-            'assets/image2.jpg',
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/image2.jpg'),
             fit: BoxFit.cover,
-            color: Colors.black.withOpacity(0.4),
-            colorBlendMode: BlendMode.darken,
+            colorFilter: ColorFilter.mode(
+              Colors.black54, // Voile sombre pour la lisibilité
+              BlendMode.darken,
+            ),
           ),
-          Center(
-            child: Padding(
+        ),
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Card(
                 elevation: 12.0,
@@ -109,6 +120,11 @@ class _LoginPageState extends State<LoginPage> {
                         height: 100,
                         width: 100,
                         fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) => const Icon(
+                          Icons.error,
+                          color: Colors.red,
+                          size: 100,
+                        ),
                       ),
                       const SizedBox(height: 24.0),
                       const Text(
@@ -117,6 +133,13 @@ class _LoginPageState extends State<LoginPage> {
                           fontSize: 28.0,
                           fontWeight: FontWeight.bold,
                           color: Colors.brown,
+                          shadows: [
+                            Shadow(
+                              color: Colors.black54,
+                              offset: Offset(1, 1),
+                              blurRadius: 3,
+                            ),
+                          ],
                         ),
                       ),
                       const SizedBox(height: 24.0),
@@ -128,15 +151,16 @@ class _LoginPageState extends State<LoginPage> {
                           }
                         },
                         child: TextField(
-                          key: Key('emailField'),
+                          key: const Key('emailField'),
                           controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
                             labelText: 'Nom d\'utilisateur',
+                            labelStyle: const TextStyle(color: Colors.brown),
                             prefixIcon: Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 12.0),
                               child: ImageIcon(
-                                AssetImage('assets/image_utilisateur.png'),
+                                const AssetImage('assets/image_utilisateur.png'),
                                 color: Colors.brown,
                                 size: 24.0,
                               ),
@@ -145,11 +169,17 @@ class _LoginPageState extends State<LoginPage> {
                               borderRadius: BorderRadius.circular(15.0),
                               borderSide: const BorderSide(color: Colors.brown),
                             ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15.0),
+                              borderSide: const BorderSide(color: Colors.brown),
+                            ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(15.0),
                               borderSide: const BorderSide(color: Colors.brown, width: 2.0),
                             ),
                             contentPadding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+                            fillColor: Colors.white.withOpacity(0.9),
+                            filled: true,
                           ),
                         ),
                       ),
@@ -157,15 +187,16 @@ class _LoginPageState extends State<LoginPage> {
                       Focus(
                         focusNode: _focusManager.passwordFocusNode,
                         child: TextField(
-                          key: Key('passwordField'),
+                          key: const Key('passwordField'),
                           controller: _passwordController,
                           obscureText: true,
                           decoration: InputDecoration(
                             labelText: 'Mot de passe',
+                            labelStyle: const TextStyle(color: Colors.brown),
                             prefixIcon: Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 12.0),
                               child: ImageIcon(
-                                AssetImage('assets/verrouiller.png'),
+                                const AssetImage('assets/verrouiller.png'),
                                 color: Colors.brown,
                                 size: 24.0,
                               ),
@@ -174,11 +205,17 @@ class _LoginPageState extends State<LoginPage> {
                               borderRadius: BorderRadius.circular(15.0),
                               borderSide: const BorderSide(color: Colors.brown),
                             ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15.0),
+                              borderSide: const BorderSide(color: Colors.brown),
+                            ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(15.0),
                               borderSide: const BorderSide(color: Colors.brown, width: 2.0),
                             ),
                             contentPadding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+                            fillColor: Colors.white.withOpacity(0.9),
+                            filled: true,
                           ),
                         ),
                       ),
@@ -187,15 +224,16 @@ class _LoginPageState extends State<LoginPage> {
                           padding: const EdgeInsets.symmetric(vertical: 10.0),
                           child: Text(
                             _errorMessage!,
-                            style: const TextStyle(color: Colors.red),
+                            style: const TextStyle(color: Colors.red, fontSize: 16),
+                            textAlign: TextAlign.center,
                           ),
                         ),
                       const SizedBox(height: 24.0),
                       ElevatedButton(
-                        key: Key('loginButton'),
+                        key: const Key('loginButton'),
                         onPressed: _login,
                         style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15.0),
                           ),
@@ -203,24 +241,22 @@ class _LoginPageState extends State<LoginPage> {
                           elevation: 5,
                           shadowColor: Colors.brown.withOpacity(0.5),
                         ),
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [Colors.brown.shade700, Colors.brown.shade500],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
-                                borderRadius: BorderRadius.circular(15.0),
-                              ),
+                        child: Container(
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [Colors.brown.shade700, Colors.brown.shade500],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
                             ),
-                            const Text(
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          child: const Center(
+                            child: Text(
                               'Se connecter',
                               style: TextStyle(fontSize: 18.0, color: Colors.white),
                             ),
-                          ],
+                          ),
                         ),
                       ),
                     ],
@@ -229,7 +265,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }
